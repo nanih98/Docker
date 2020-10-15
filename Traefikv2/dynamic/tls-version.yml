@@ -1,8 +1,10 @@
+# Dynamic
+# Documentation: https://doc.traefik.io/traefik/https/tls/
 tls:
     options:
       default:
         minVersion: VersionTLS12
         maxVersion: VersionTLS13
-    
+
       mintls13:
         minVersion: VersionTLS13
