@@ -65,7 +65,7 @@ services:
       - traefik.http.routers.traefik.tls.domains[0].sans=*.yourdomain.com
       - traefik.http.routers.traefik.tls.certresolver=myresolver
   miweb:
-    image: nginx:lates
+    image: nginx:latest
     container_name: nginx
     restart: always
     networks:
