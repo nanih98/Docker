@@ -19,3 +19,9 @@ See the official documentation for other providers:
 https://doc.traefik.io/traefik/https/acme/
 
 > Wildcard certificates only works with DNS challenge.
+
+# Traefik and custom certificates
+
+Take a look to the folder dynamic
+
+[Traefik TLS](https://doc.traefik.io/traefik/https/tls/)

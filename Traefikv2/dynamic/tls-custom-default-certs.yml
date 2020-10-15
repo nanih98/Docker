@@ -1,0 +1,8 @@
+# Dynamic configuration
+# Documentation https://doc.traefik.io/traefik/https/tls/
+tls:
+    stores:
+      default:
+        defaultCertificate:
+          certFile: /etc/certs/yourcert.cert
+          keyFile: /etc/certs/yourkey.key
