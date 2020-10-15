@@ -42,11 +42,11 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       # Mount the dynamic configuration
-      - /srv/traefik/dynamic:/etc/traefik/dynamic
+      - ./traefik/dynamic:/etc/traefik/dynamic
       # Mount the directory where we have logs
-      - /srv/traefik/log:/var/log
+      - ./traefik/log:/var/log
       # Store acme.json
-      - /srv/traefik/letsencrypt:/letsencrypt
+      - ./traefik/letsencrypt:/letsencrypt
     env_file:
       - cloudflare.env # https://support.cloudflare.com/hc/en-us/articles/200167836-Managing-API-Tokens-and-Keys
     labels:
