@@ -71,14 +71,15 @@ services:
     networks:
       - frontend
     volumes:
-      - ./
+      # Example
+      - ./nginx:/usr/share/nginx/html/
     labels:
       - traefik.enable=true
       - traefik.http.routers.bitbucket.rule=Host(`www.yourdomain.com`) 
       - traefik.http.routers.bitbucket.entrypoints=websecure
       - traefik.http.routers.bitbucket.tls.certresolver=myresolver
       - traefik.http.routers.bitbucket.tls=true
-      # Replacement regez entire domain to www.yourdomain.com
+      # Replacement regex entire domain to www.yourdomain.com
       - traefik.http.routers.frontend.middlewares=test-replacepathregex
       - traefik.http.middlewares.test-replacepathregex.redirectregex.regex=^https?://yourdomain.com/?(.*)
       - traefik.http.middlewares.test-replacepathregex.redirectregex.replacement=https://www.yourdomain.com$${1}      
