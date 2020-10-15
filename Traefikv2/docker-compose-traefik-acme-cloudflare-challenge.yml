@@ -1,0 +1,88 @@
+version: "3.8"
+services:
+  traefik:
+    image: traefik:v2.3
+    container_name: traefik
+    restart: always
+    networks:
+      - frontend
+    command:
+      - --log.level=DEBUG
+      - --log.filePath=/var/log/traefik.log
+      - --log.format=json
+      - --api=true
+      - --api.dashboard=true
+      - --api.insecure=false
+      - --api.debug=false
+      - --providers.docker=true
+      - --tracing=false
+      - --tracing.serviceName=traefik
+      - --providers.docker.exposedbydefault=false
+      - --providers.file.directory=/etc/traefik/dynamic
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      - --entrypoints.websecure.address=:443
+      - --accesslog=true
+      - --accesslog.filepath=/var/log/access.log
+      - --accesslog.bufferingsize=500
+      # Let's encrypt certificate
+      - --certificatesresolvers.myresolver.acme.email=YOURDOMAIN.com
+      - --certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.myresolver.acme.dnschallenge.provider=cloudflare # setup your DNS provider of your domain. Use HTTP validation instead
+      - --certificatesresolvers.myresolver.acme.caserver=https://acme-v02.api.letsencrypt.org/directory # for testing --> https://acme-staging-v02.api.letsencrypt.org/directory
+        #- --certificatesresolvers.myresolver.acme.keytype=RSA4096
+        #- --certificatesresolvers.myresolver.acme.tlschallenge=true
+        #- --certificatesresolvers.myresolver.acme.httpchallenge=true
+        # - --certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=websecure
+    ports:
+      - "80:80"
+      - "443:443"
+        #  - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Mount the dynamic configuration
+      - /srv/traefik/dynamic:/etc/traefik/dynamic
+      # Mount the directory where we have logs
+      - /srv/traefik/log:/var/log
+      # Store acme.json
+      - /srv/traefik/letsencrypt:/letsencrypt
+    env_file:
+      - cloudflare.env # https://support.cloudflare.com/hc/en-us/articles/200167836-Managing-API-Tokens-and-Keys
+    labels:
+      # Api
+      #- traefik.enable=true
+      #- traefik.http.routers.traefik.rule=Host(`traefik.yourdomain.com`)
+      #- traefik.http.services.traefik.loadbalancer.server.port=8080
+      #- traefik.http.services.traefik.loadbalancer.server.scheme=http
+      # GLobal http --> https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.routers.http-catchall.rule=hostregexp(`{host:[a-z-.]+}`)
+      - traefik.http.routers.http-catchall.entrypoints=web
+      - traefik.http.routers.http-catchall.middlewares=redirect-to-https
+      # Wildcard cert
+      - traefik.http.routers.traefik.tls.domains[0].main=yourdomain.com
+      - traefik.http.routers.traefik.tls.domains[0].sans=*.yourdomain.com
+      - traefik.http.routers.traefik.tls.certresolver=myresolver
+  miweb:
+    image: nginx:lates
+    container_name: nginx
+    restart: always
+    networks:
+      - frontend
+    volumes:
+      - ./
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.bitbucket.rule=Host(`www.yourdomain.com`) 
+      - traefik.http.routers.bitbucket.entrypoints=websecure
+      - traefik.http.routers.bitbucket.tls.certresolver=myresolver
+      - traefik.http.routers.bitbucket.tls=true
+      # Replacement regez entire domain to www.yourdomain.com
+      - traefik.http.routers.frontend.middlewares=test-replacepathregex
+      - traefik.http.middlewares.test-replacepathregex.redirectregex.regex=^https?://yourdomain.com/?(.*)
+      - traefik.http.middlewares.test-replacepathregex.redirectregex.replacement=https://www.yourdomain.com$${1}      
+
+networks:
+  frontend:
+    driver: bridge
