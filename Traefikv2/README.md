@@ -26,7 +26,7 @@ Take a look to the folder dynamic
 
 [Traefik TLS](https://doc.traefik.io/traefik/https/tls/)
 
-# Some tutorials about this configurations  
+# Some tutorials about that configurations  
 
 In mi personal webpage you can find some tutorials about that configurations of traefik.
 
