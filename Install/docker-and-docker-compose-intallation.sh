@@ -14,6 +14,8 @@ EOF
 # Install latest docker
 curl https://get.docker.com | sh 
 usermod -aG docker root
+# Only allow docker command for root (for production environment)
+chmod 700 /usr/bin/docker
 
 # This following script it's forked from https://gist.github.com/deviantony/2b5078fe1675a5fedabf1de3d1f2652a
 
