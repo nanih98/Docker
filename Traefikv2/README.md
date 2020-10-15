@@ -18,3 +18,4 @@ See the official documentation for other providers:
 
 https://doc.traefik.io/traefik/https/acme/
 
+> Wildcard certificates only works with DNS challenge.
