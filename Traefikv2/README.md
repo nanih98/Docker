@@ -11,3 +11,10 @@ https://doc.traefik.io/traefik/https/acme/
 Important notes:
 
 **If you are in production, do not upload the cloudflare.env to a git repository, as it contains the cloudflare API credentials!**
+
+Other DNS providers?
+
+See the official documentation for other providers:
+
+https://doc.traefik.io/traefik/https/acme/
+
