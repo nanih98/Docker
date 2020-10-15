@@ -6,7 +6,7 @@
 
 https://doc.traefik.io/traefik/https/acme/
 
-# Traefik and acme with Cloudflare
+# Traefik and acme with Cloudflare  
 
 Important notes:
 
@@ -20,7 +20,7 @@ https://doc.traefik.io/traefik/https/acme/
 
 > Wildcard certificates only works with DNS challenge.
 
-# Traefik and custom certificates
+# Traefik and custom certificates  
 
 Take a look to the folder dynamic
 
