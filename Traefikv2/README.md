@@ -5,3 +5,9 @@
 # Documentation Traefik v2 and Let's encrypt
 
 https://doc.traefik.io/traefik/https/acme/
+
+# Traefik and acme with Cloudflare
+
+Important notes:
+
+**If you are in production, do not upload the cloudflare.env to a git repository, as it contains the cloudflare API credentials!**
