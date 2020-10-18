@@ -11,40 +11,47 @@ cat << "EOF"
 .########...#######...######..##....##.########.##.....##
 EOF
 
-# Check that user is root 
+echo ""
+
+# Check that user is root
 if [[ $EUID -ne 0 ]]
 then
 echo -e "The user is not ROOT, so it is not allowed to run the script"
-echo -e "Try using sudo if your user is in sudoers"
+echo -e "Try using sudo if your user are in sudoers"
 exit 1
 fi
 
+echo -e "\e[31mFollowing the directions from Docker, I will not give Docker permissions to a non-root user. We also won't let a non-root user run docker-compose\e[m\n"
+
+echo -e "\e[31mWARNING: Adding a user to the "docker" group will grant the ability to run
+         containers which can be used to obtain root privileges on the
+         docker host.
+         Refer to https://docs.docker.com/engine/security/security/#docker-daemon-attack-surface
+         for more information.\e[m \n\n"
+
 # Install latest docker
-#curl https://get.docker.com | sh 
-#usermod -aG docker root
-## Only allow docker command for root (for production environment)
-#chmod 700 /usr/bin/docker
+echo -e "\e[31mInstalling Docker...\e[m\n\n"
+curl https://get.docker.com | sh
+chmod +x /usr/bin/docker
+chmod 700 /usr/bin/docker
 
 # Get latest docker version
 compose_version=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep 'tag_name' | cut -d\" -f4)
 
 # Install docker-compose
-# Ask if you want to install docker only for root PATH
-read -p "Do you want to install docker only for root? Type [yes/no]: " answer 
-echo -e "Remember that if you enable the docker command for any user, they will be able to manage the containers \n"
+echo ""
+echo -e "\e[31mInstalling docker-compose...\e[m"
+sh -c "curl -L https://github.com/docker/compose/releases/download/${compose_version}/docker-compose-`uname -s`-`uname -m` > /usr/bin/docker-compose"
+chmod +x /usr/bin/docker-compose
 
-if [ $answer == "yes"]; then
-    sh -c "curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > /usr/bin/docker-compose"
-    chmod +x /usr/bin/docker-compose 
-else 
-    sh -c "curl -L https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose"
-    chmod +x /usr/local/bin/docker-compose
-    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-fi 
-
-# Output docker version
-docker -v
-# Output compose version
-docker-compose -v
+# Alternaive to non-root users
+echo -e "\e[31mNON-ROOT USER\e[m"
+cat << "EOF"
+If you want to be able to run Docker and docker-compose with a non-Docker user ...
+$ usermod -aG docker your_username
+$ chmod 755 /usr/bin/docker
+$ chmod 755 /usr/bin/docker-compose
+$ MAYBE: ln -s /usr/bin/docker-compose /usr/local/bin/docker-compose
+EOF
 
 exit 0
